@@ -15,7 +15,7 @@ BIN_DIR = bin
 
 # Source Discovery
 SRC = $(shell find $(SRC_DIR) -type f -name '*.c')
-OBJS = ($patsubst $(SRC_DIR)/%.c,$(BUILD_DIR)/%.o,$(SRCS))
+OBJS = $(patsubst $(SRC_DIR)/%.c,$(BUILD_DIR)/%.o,$(SRCS))
 DEPS = $(OBJS:.o=.d)
 
 # Default Target
