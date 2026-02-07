@@ -1,50 +1,37 @@
-
 # Compiler
 CC = gcc
-
-# Compiler flags C11 standard
-CFLAGS = -Wall -Wextra -std=c11
-
-TARGET = mysh
+CFLAGS = -Wall -Wextra -std=c11 -Iinclude
 
 # Directories
 SRC_DIR = src
-INC_DIR = include
 BUILD_DIR = build
 BIN_DIR = bin
 
-# Source Discovery
-SRC = $(shell find $(SRC_DIR) -type f -name '*.c')
-OBJS = $(patsubst $(SRC_DIR)/%.c,$(BUILD_DIR)/%.o,$(SRCS))
-DEPS = $(OBJS:.o=.d)
+# Output
+TARGET = mysh
 
-# Default Target
-.PHONY: all
+# Source files
+SRCS := $(wildcard $(SRC_DIR)/*.c)
+
+# Object files
+OBJS := $(patsubst $(SRC_DIR)/%.c,$(BUILD_DIR)/%.o,$(SRCS))
+
+# Default target
 all: $(BIN_DIR)/$(TARGET)
 
 # Link
 $(BIN_DIR)/$(TARGET): $(OBJS)
-	@mkdir -p $(BIN_DIR)
-	$(CC) $(LDFLAGS) $^ $(LDLIBS) -o $@
+	mkdir -p $(BIN_DIR)
+	$(CC) $(OBJS) -o $@
 
-# ---------- Compile (with dependency generation) ----------
-# -MMD -MP generates .d dependency files alongside .o
+# Compile
 $(BUILD_DIR)/%.o: $(SRC_DIR)/%.c
-	@mkdir -p $(dir $@)
-	$(CC) $(CPPFLAGS) $(CFLAGS) -MMD -MP -c $< -o $@
+	mkdir -p $(BUILD_DIR)
+	$(CC) $(CFLAGS) -c $< -o $@
 
-# ---------- Include auto-generated deps ----------
--include $(DEPS)
-
-# ---------- Convenience targets ----------
-.PHONY: run
-run: all
-	./$(BIN_DIR)/$(TARGET)
-
-.PHONY: clean
+# Clean
 clean:
 	rm -rf $(BUILD_DIR) $(BIN_DIR)
 
-.PHONY: format
-format:
-	@echo "No formatter configured.
+.PHONY: all clean
+
